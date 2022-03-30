@@ -25,6 +25,8 @@ from functional.io import WRITE_MODE, universal_write_open
 from functional import transformations
 from functional.execution import ExecutionStrategies
 
+def _seq(a): return [a] if not isinstance(a, collections.abc.Iterable) else a  # XD
+
 
 class Sequence(object):
     """
@@ -91,6 +93,7 @@ class Sequence(object):
 
         :return: hash of sequence
         """
+        # print('in __hash__', self.sequence, type(self.sequence))  # XD debug
         raise TypeError("unhashable type: Sequence")
 
     def __repr__(self):
@@ -506,6 +509,17 @@ class Sequence(object):
         """
         return self._transform(transformations.select_t(func))
 
+    def _image(self, a, of_key=True):  # XD
+        (i0, i1) = (0, 1) if of_key else (1, 0)
+        return self.filter(lambda x: x[i0] == a).map(lambda x: x[i1]) 
+
+    def image(self, a): return self.filter(lambda x: x[0] in _seq(a)).map(lambda x: x[1]).distinct()  # XD
+    # def image(self, a): return self.filter(lambda x: x[0] == a).map(lambda x: x[1])#.distinct()  # XD
+    def preimage(self, a): return self.filter(lambda x: x[1] in _seq(a)).map(lambda x: x[0]).distinct()  # XD
+    def dom(self): return self.map(lambda x: x[0]).distinct()  # XD
+    def codom(self): return self.map(lambda x: x[1]).distinct()  # XD
+    def a(self, fn, *args, **kwargs): return fn(self.list(), *args, **kwargs) # XD: apply
+
     def starmap(self, func):
         """
         starmaps f onto the sequence as itertools.starmap does.
@@ -906,6 +920,9 @@ class Sequence(object):
         :return: sequence grouped by key
         """
         return self._transform(transformations.group_by_key_t())
+
+    def swap_kv(self): return self.map(lambda x: (x[1], x[0]))  # XD
+    def group_by_value(self): return self.swap_kv().group_by_key().swap_kv()  # XD
 
     def reduce_by_key(self, func):
         """

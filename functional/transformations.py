@@ -145,6 +145,7 @@ def distinct_t():
     def distinct(sequence):
         seen = set()
         for element in sequence:
+            # print('in distint', element, type(element)) # XD debug
             if element in seen:
                 continue
             seen.add(element)
@@ -363,7 +364,8 @@ def inits_t(wrap):
     return Transformation(
         "inits",
         lambda sequence: [
-            wrap(sequence[:i]) for i in reversed(range(len(sequence) + 1))
+            # wrap(sequence[:i]) for i in reversed(range(len(sequence) + 1))
+            tuple(wrap(reversed(sequence[:i]))) for i in range(1, len(sequence) + 1)  # XD: list->tuple to be hashable for distinct()
         ],
         {ExecutionStrategies.PRE_COMPUTE},
     )
@@ -377,7 +379,7 @@ def tails_t(wrap):
     """
     return Transformation(
         "tails",
-        lambda sequence: [wrap(sequence[i:]) for i in range(len(sequence) + 1)],
+        lambda sequence: [tuple(wrap(sequence[i:])) for i in range(len(sequence) + 1)], # XD: : list->tuple to be hashable for distinct()
         {ExecutionStrategies.PRE_COMPUTE},
     )
 
