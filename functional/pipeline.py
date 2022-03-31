@@ -25,7 +25,8 @@ from functional.io import WRITE_MODE, universal_write_open
 from functional import transformations
 from functional.execution import ExecutionStrategies
 
-def _seq(a): return [a] if not isinstance(a, collections.abc.Iterable) else a  # XD
+def _seq(a):  # XD
+    return [a] if isinstance(a, str) or not isinstance(a, collections.abc.Iterable) else a
 
 
 class Sequence(object):
@@ -513,6 +514,7 @@ class Sequence(object):
         (i0, i1) = (0, 1) if of_key else (1, 0)
         return self.filter(lambda x: x[i0] == a).map(lambda x: x[i1]) 
 
+    # def image1(self, a): return self.filter(lambda x: x[0] == a).map(lambda x: x[1]).head()  # XD
     def image(self, a): return self.filter(lambda x: x[0] in _seq(a)).map(lambda x: x[1]).distinct()  # XD
     # def image(self, a): return self.filter(lambda x: x[0] == a).map(lambda x: x[1])#.distinct()  # XD
     def preimage(self, a): return self.filter(lambda x: x[1] in _seq(a)).map(lambda x: x[0]).distinct()  # XD
